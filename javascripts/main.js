@@ -1,5 +1,5 @@
-$.ready(function() {
-   $('#dropdown a').click(function() {
-      $(this).find('ul').toggle('medium');
+$(document).ready(function() {
+   $('#dropdown span.button').click(function() {
+      $(this).parent().find('ul').slideToggle('medium');
    });
 });
