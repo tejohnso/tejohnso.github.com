@@ -1,1 +1,5 @@
-console.log('This would be the main JS file.');
+$.ready(function() {
+   $('#dropdown a').click(function() {
+      $(this).find('ul').toggle('medium');
+   });
+});
