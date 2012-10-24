@@ -26,7 +26,7 @@
         </header>
 
         <section id="dropdown" class="clearfix">
-        <span class="button"><a href="#">xorg.conf  &#5121;</a></span>
+        <span class="button"><a href="#">.bashrc  &#5121;</a></span>
         <ul>
            <li><a href="http://github.com/tejohnso">My GitHub Acct</a></li>
            <li><a href="index.html">Welcome</a></li>
@@ -39,26 +39,38 @@
         <hr>
 
         <section id="main_content">
-          <h3>xorg.conf</h3>
+          <h3>.bashrc</h3>
 
-          <pre><code>Section "Device"
-	Identifier "vid1"
-	Driver "vboxvideo"
-EndSection
+          <pre><code>#
+# ~/.bashrc
+#
 
-Section "Screen"
-	Identifier "default"
-	Device "vid1"
-	SubSection "Display"
-		Depth 24
-		Modes "1920x1080"
-	EndSubSection
-EndSection
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+export PATH=$PATH:$(ruby -rubygems -e "puts Gem.user_dir")/bin
+export MONGOHQ_URL=[removed]
+alias ls='ls --color=auto'
+alias vi='/usr/bin/vim'
+alias la='ls -al --color=auto'
+set -o vi
+# PS1='[\u@\h \W]\$ ' default prompt disabled
+# set the prompt to show user, path, and the time in the top right corner of the terminal
+PS1="\[\033[s\]\[\033[1;\$((COLUMNS-4))f\]\$(date +%H:%M)\[\033[u\]\[\e[0;32m\]\u\[\e[m\]\[\e[0;36m\] \w\[\e[m\] \[\e[0;93m\]\$\[\e[m\] "
 
-Section "ServerLayout"
-	Identifier "defaultLayout"
-	Screen "default"
-EndSection
+#Prompt statement 1 (PS1) decoded
+#\[\033[s\]    store cursor posn
+#\[\033[1;\$((COLUMNS-4))f\]   move cursor position 
+#\$(date +%H:%H)   output date
+#\[\033[u\]    restore cursor posn
+#\e[0;32m\]    open set color green
+#\u            put user
+#\[\e[m\]      close color set
+#\[\e[0;36m\]  open set color yellow
+# \w           put directory
+#\[\e[m\]      close color set
+# \[\e[0;93m\] open set color yellow
+#\$            put prompt
+#\[e\e[m\]     close color set
          </code></pre>
         </section>
 
