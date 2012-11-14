@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>tejohnso.github.com by tejohnso</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>tejohnso.github.com</h1>
+          <h2>tejohnso</h2>
+        </header>
+
+        <section id="dropdown" class="clearfix">
+        <span class="button"><a href="#">SICP - 2.6 Church Numerals &#5121;</a></span>
+        <ul>
+           <li><a href="http://github.com/tejohnso">My GitHub Repos</a></li>
+           <li><a href="index.html">Welcome</a></li>
+           <li><a href="sicp-2.6.html">SICP - 2.6 Church Numerals</a></li>
+           <li><a href="xorg.conf.html">xorg.conf</a></li>
+           <li><a href="bashrc.html">.bashrc</a></li>
+        </ul>
+
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h3>SICP - 2.6 Church Numerals</h3>
+
+          <p>A little bit about the church numerals exersice from The Structure and Interpretation of Computer Programs.</p>
+<pre><code>
+
+(define one (lambda (f) (lambda (x) (f x))))
+(define (add-one x) (+ 1 x))
+
+;;;one - takes an action function and returns a function that executes the action on the next parameter once
+
+;;;so if we have a function (add-one x) (+ 1 x) then ((one add-one) 5) -> 6.  The one gets the action function add-one and applies it to 5 once.
+
+;;;This is similar to counting.  Imagine a bag with inifinite number of oranges.  If we want to start counting oranges we could apply a (take-orange) function to the bag.  If we did that once we would have one orange taken from the bag.  That's one way to look at the above defined function for one.  
+;;;If we wanted two, or three oranges we would apply the take-from-bag function two, or three times.  So our action function gets called in succession.
+
+(define two (lambda (f) (lambda (x) (f (f x)))))
+(define three (lambda (f) (lambda (x) (f (f (f x))))))
+
+;;;For  we would apply the action function zero times, and just get back the unchanged target (our infinite orange bag remains untouched)
+
+(define zero (lambda (f) (lambda (x) x)))
+
+;;;So zero will take a function and apply it 0 times to the target and so ((zero add-one) 5) -> 5  ;; add-one never gets called
+
+;;;Now what about a plus function, can we create such a function that will operate on these number functions?  If we think about a + b as the result of applying the action function b times to the target, and then applying the action function another a times, we can come up with a plus function as follows:
+
+(define (plus a b) (lambda (f) (lambda (x) ((a f) ((b f) x)))))
+
+;;;So we have a function that takes an action function f and returns a function that will take a target parameter x.  We then start applying the numbers using target function f.  First we call the b number with action function f against x and use that result as the target parameter for a call of the a number with target function f.  It helps to go through a few tests to see what's going on.  For example:
+
+;;;  ((one add-one) 5) ;;6
+;;;  ((two add-one) 5) ;;7
+;;;  ((one add-one) 7) ;;8
+;;;  (((plus one two) add-one) 5) ;;8
+
+;;;Let's look at that previous example in more detail.
+;;;First (plus one two) gives us
+;;;    (plus one two) 
+;;;  ->(lambda (f) (lambda (x) ((one f) ((two f) x)))))
+;;;  now we pass our action function into that result
+;;;  ->(lambda (x) ((one add-one) ((two add-one) x))))
+;;;  now we pass our target of five into that result
+;;;  ->((one add-one) ((two add-one) 5)))
+;;;  ->((one add-one) 7)
+;;;  ->8
+
+;;;Okay, so we have a plus function that only operates on two numeral functions.  What about a more general plus function?  
+
+(define (multi-plus . c) ;;we'll take any number of parameters
+  (lambda (f)
+    (lambda (x)
+      (define (recur num-list)
+        (if (null? num-list)
+          ((zero f) x)  ;;The last number to be added is zero
+          (((car num-list) f) (recur (cdr num-list)))))
+      (recur c))))
+
+;;;This version of plus continally applies the next number to the target.  The target is the result of the previous number's application to the target.  The last number to be applied is the zero number and ends the recursive addition process.</code></pre>
+
+
+        </section>
+        <footer>
+          Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.  Slightly modified to suit my taste.
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
