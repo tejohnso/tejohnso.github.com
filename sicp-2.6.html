@@ -42,63 +42,66 @@
         <section id="main_content">
           <h3>SICP - 2.6 Church Numerals</h3>
 
-          <p>A little bit about the church numerals exersice from The Structure and Interpretation of Computer Programs.</p>
-<pre><code>
+          <p>A little bit about the church numerals exercise from <a href="http://mitpress.mit.edu/sicp">Structure and Interpretation of Computer Programs</a>.  I've been trekking through the book with some occasional difficulty but this section was the most difficult so far.  Credit goes to <a href="www.billthelizard.com">Bill the Lizard</a> for the counting metaphor and much credit goes to <a href="www.wikipedia.org">Wikipedia</a> for the detailed entry regarding <a href="en.wikipedia.org/wiki/Lambda_calculus">Lambda calculus</a>.</p>
+          <p>The exercise starts off with a definition for a strange representation of the number one.</p>
 
-(define one (lambda (f) (lambda (x) (f x))))
-(define (add-one x) (+ 1 x))
+<pre><code>(define one (lambda (f) (lambda (x) (f x))))</code></pre>
 
-;;;one - takes an action function and returns a function that executes the action on the next parameter once
+<p>Turns out this is referred to as a Church numeral named after Alonzo Church who first formulated the Lambda calculus.  This representation of one takes an action function and returns a function that executes the action on the next parameter once.  To test it out, let's set up an action function for it to work on.  We'll call it add-one.</p>
 
-;;;so if we have a function (add-one x) (+ 1 x) then ((one add-one) 5) -> 6.  The one gets the action function add-one and applies it to 5 once.
+<pre><code>(define (add-one x) (+ 1 x))</code></pre>
 
-;;;This is similar to counting.  Imagine a bag with inifinite number of oranges.  If we want to start counting oranges we could apply a (take-orange) function to the bag.  If we did that once we would have one orange taken from the bag.  That's one way to look at the above defined function for one.  
-;;;If we wanted two, or three oranges we would apply the take-from-bag function two, or three times.  So our action function gets called in succession.
+<p>Now we can see use the Church numeral one combined with this add-one action and we should get one plus whatever target we pass to the resulting function.</p>
 
-(define two (lambda (f) (lambda (x) (f (f x)))))
-(define three (lambda (f) (lambda (x) (f (f (f x))))))
+<pre><code>((one add-one) 5) ;;6   The one numeral gets the action function add-one and applies it to 5 once.</code></pre>
 
-;;;For  we would apply the action function zero times, and just get back the unchanged target (our infinite orange bag remains untouched)
+<p>We can think of this as being similar to counting. Imagine a bag with an inifinite number of oranges.  If we want to start counting oranges we could apply a (take-orange) function to the bag.  If we did that once we would have one orange taken from the bag.  That's one way to look at the above defined function for one.  If we wanted two, or three oranges we would apply the take-from-bag function two, or three times.  Now we could do that by repeatedly applying the one function, but it's more convenient to use other numerals, like two for twice applying the take-orange function or three for thrice applying the take-orange function.</p> 
 
-(define zero (lambda (f) (lambda (x) x)))
+<pre><code>(define two (lambda (f) (lambda (x) (f (f x)))))
+(define three (lambda (f) (lambda (x) (f (f (f x))))))</code></pre>
 
-;;;So zero will take a function and apply it 0 times to the target and so ((zero add-one) 5) -> 5  ;; add-one never gets called
+<p>For a representation of zero, we would apply the action function 0 times.  So our, and just get back the unchanged target (our infinite orange bag remains untouched).</p>
 
-;;;Now what about a plus function, can we create such a function that will operate on these number functions?  If we think about a + b as the result of applying the action function b times to the target, and then applying the action function another a times, we can come up with a plus function as follows:
+<pre><code>(define zero (lambda (f) (lambda (x) x)))</code></pre>
 
-(define (plus a b) (lambda (f) (lambda (x) ((a f) ((b f) x)))))
+<p>So zero will take a function and apply it 0 times to the target just giving the target back untouched.</p>
 
-;;;So we have a function that takes an action function f and returns a function that will take a target parameter x.  We then start applying the numbers using target function f.  First we call the b number with action function f against x and use that result as the target parameter for a call of the a number with target function f.  It helps to go through a few tests to see what's going on.  For example:
+<pre><code>((zero add-one) 5) ;; 5   Add-one never gets called</code></pre>
 
-;;;  ((one add-one) 5) ;;6
-;;;  ((two add-one) 5) ;;7
-;;;  ((one add-one) 7) ;;8
-;;;  (((plus one two) add-one) 5) ;;8
+<p>Now what about a plus function, can we create such a function that will operate on these number functions?  If we think about a + b as the result of applying the action function b times to the target, and then applying the action function another a times, we can come up with a plus function that takes parameters a and b as follows:</p>
 
-;;;Let's look at that previous example in more detail.
-;;;First (plus one two) gives us
-;;;    (plus one two) 
-;;;  ->(lambda (f) (lambda (x) ((one f) ((two f) x)))))
-;;;  now we pass our action function into that result
-;;;  ->(lambda (x) ((one add-one) ((two add-one) x))))
-;;;  now we pass our target of five into that result
-;;;  ->((one add-one) ((two add-one) 5)))
-;;;  ->((one add-one) 7)
-;;;  ->8
+<pre><code>(define (plus a b) (lambda (f) (lambda (x) ((a f) ((b f) x)))))</code></pre>
 
-;;;Okay, so we have a plus function that only operates on two numeral functions.  What about a more general plus function?  
+<p>So we have a function that takes an action function f and returns a function that will take a target parameter x.  It will then start applying the numbers using target function f.  First we call the b number with action function f against x and use that result as the target parameter for a call of the a number with target function f.  It helps to go through a few tests to see what's going on.  For example:</p>
 
-(define (multi-plus . c) ;;we'll take any number of parameters
+<pre><code>((one add-one) 5) ;;6
+((two add-one) 5) ;;7
+((one add-one) 7) ;;8
+(((plus one two) add-one) 5) ;;8</code></pre>
+
+<p>Let's look at that previous example in more detail.</p>
+<p>First (plus one two) gives us:</p>
+<pre><code>(plus one two)
+(lambda (f) (lambda (x) ((one f) ((two f) x))))</code></pre>
+</p>Now we pass our action function into that result</p>
+<pre><code>(lambda (x) ((one add-one) ((two add-one) x)))</code></pre>
+<p>Now we pass our target of five into that result</p>
+<pre><code>((one add-one) ((two add-one) 5))
+((one add-one) 7)
+8</code></pre>
+
+<p>Okay, so we have a plus function that only operates on two numeral functions.  What about a more general plus function?</p>
+
+<pre><code>(define (multi-plus . c) ;;we'll take any number of parameters
   (lambda (f)
     (lambda (x)
       (define (recur num-list)
         (if (null? num-list)
           ((zero f) x)  ;;The last number to be added is zero
           (((car num-list) f) (recur (cdr num-list)))))
-      (recur c))))
+      (recur c))))</code></pre>
 
-;;;This version of plus continally applies the next number to the target.  The target is the result of the previous number's application to the target.  The last number to be applied is the zero number and ends the recursive addition process.</code></pre>
-
+<p>This version of plus continally applies the next number to the target.  The target is the result of the previous number's application to the target.  The last number to be applied is the zero number and ends the recursive addition process.</p>
 
         </section>
         <footer>
