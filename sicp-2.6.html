@@ -55,7 +55,7 @@
 
 <pre><code>((one add-one) 5) ;;6   The one numeral gets the action function add-one and applies it to 5 once.</code></pre>
 
-<p>We can think of this as being similar to counting. Imagine a bag with an inifinite number of oranges.  If we want to start counting oranges we could apply a (take-orange) function to the bag.  If we did that once we would have one orange taken from the bag.  That's one way to look at the above defined function for one.  If we wanted two, or three oranges we would apply the take-from-bag function two, or three times.  Now we could do that by repeatedly applying the one function, but it's more convenient to use other numerals, like two for twice applying the take-orange function or three for thrice applying the take-orange function.</p> 
+<p>We can think of this as being similar to counting. Imagine a bag with an inifinite number of oranges.  If we want to start counting oranges we could apply a (take-orange) function to the bag.  If we did that once we would have one orange taken from the bag.  That's one way to look at the above defined function for one.  If we wanted two, or three oranges we would apply the take-orange function two, or three times.  Now we could do that by repeatedly applying the one function, but it's more convenient to use other numerals, like two for twice applying the take-orange function or three for thrice applying the take-orange function.</p> 
 
 <pre><code>(define two (lambda (f) (lambda (x) (f (f x)))))
 (define three (lambda (f) (lambda (x) (f (f (f x))))))</code></pre>
