@@ -59,7 +59,7 @@
          ((not (list? x)) (list x))
          ((null? (cdr x)) (fringe (car x)))
          ((null? (car x)) (fringe (car (cdr x))))
-         ((list? (car x)) (fringe (list (car (car x)) (car (cdr (car x))) (car (cdr x)) (car     (cdr (cdr x))))))
+         ((list? (car x)) (fringe (list (car (car x)) (cdr (car x)) (car (cdr x)) (cdr (cdr x)))))
          (else (cons (car x) (fringe (cdr x))))))</pre></code>
 
 <p>While cdr'ing down a list it's possible to end up left with null.  If we do we'll return that as the final parameter to the last cons.  Remember that construction of a flat list using cons has to end with either null or a single element list.  For example <code>(cons 1 (cons 2 (cons 3 ())))</code> returns <code>(1 2 3)</code> as does <code>(cons 1 (cons 2 cons (list 3)))</code>.  So those are our two ending conditions - null, or a non-list parameter.</p>
@@ -67,7 +67,7 @@
 
 <p>In the case of a list as the next element, we want to recur back into the procedure with a newly created list consisting of the next element extracted from the inner-list, followed by the rest of the elements.  So a parameter of <code>((1 2) 3)</code> would be changed to <code>(1 (2) 3 ())</code>.  Also, <code>(((1 2) 3) 4)</code> would recur as <code>((1 2) (3) 4 ())</code> then processed again as <code>(1 (2) (3) (4 ())</code>.  The idea is to keep calling fringe on the parameter until the first element is not a list, without loosing any of the other elements.</p>  
 
-<code><pre>(fringe '((1 2) (3 4) 5 () () (((7))) ((8) 9) (((10 ((11))))) 12))
+<code><pre>(fringe '((1 2) (3 4) 5 () (6) (((7))) ((8) 9) (((10 ((11))))) 12))
 (1 2 3 4 5 6 7 8 9 10 11 12)</pre></code>
 
 <p>As always, I've written this out and worded it for myself with hopes that I will understand it if I come back to it later on.  If you've found it useful as well, I'd love to hear about it.</p>
