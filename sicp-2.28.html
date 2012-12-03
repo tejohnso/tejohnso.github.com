@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>tejohnso.github.com by tejohnso</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>tejohnso.github.com</h1>
+          <h2>tejohnso</h2>
+        </header>
+
+        <section id="dropdown" class="clearfix">
+        <span class="button"><a href="#">SICP - 2.6 Church Numerals &#5121;</a></span>
+        <ul>
+           <li><a href="http://github.com/tejohnso">My GitHub Repos</a></li>
+           <li><a href="index.html">Welcome</a></li>
+           <li><a href="sicp-2.6.html">SICP - 2.6 Church Numerals</a></li>
+           <li><a href="sicp-2.28.html">SICP - 2.28 Plucking Leaves (Fringe)</a></li>
+           <li><a href="xorg.conf.html">xorg.conf</a></li>
+           <li><a href="bashrc.html">.bashrc</a></li>
+        </ul>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h3>SICP - 2.28 Plucking Leaves (Fringe)</h3>
+
+          <p>This exercise follows much discussion about how data can be grouped and manipulated using <code>cons</code>, <code>car</code>, <code>cdr</code>, and <code>list</code>.  The objective is to take a tree in list form, for example <code>(1 (2 3) 4 5)</code>, and return a basic list consisting of all of the leaves of the tree in original order.  So the result for <code>(1 (2 3) 4 5)</code> would be <code>(1 2 3 4 5)</code>.  This is to be done using a function named <code>fringe</code>.
+          <p>By the time this exercise is begun, we are quite familiar with the idea of breaking lists apart.  So for example we know that <code>(car ((1 2) 3))</code> is <code>(1 2)</code> and <code>(cdr (1 2))</code> is <code>(2)</code>.  Note that the last result is a list consisting of only one non-null element.  You would have to apply <code>car</code> to that to get the single element <code>2</code>, and the tail of <code>(2)</code> would be null or <code>()</code>.</p>
+
+<p>I started out on this one with a simple idea.  I knew the function would have to recur until nil was found, and that if an inner-list was encountered that would have to be recur again.  So I ended up with something like this:</p>
+<code><pre>(define (fringe x)
+   (cond ((null? x) x)
+         ((not (list? x)) x)
+         (cons (fringe (car x)) (fringe (cdr x)))))</pre></code>
+
+<p>So the idea is that we <code>cons</code> the result of the function applied to the beginning of the list and the end of the list, recursively.  This works well for <code>(1 2 3 4)</code> but fails for <code>((1 2) 3 4)</code>.  It's not quite right.  For one thing, the last line is going to result in some badly constructed <code>cons</code> calls on processing inner lists.  After some trial and error, I decided to simplify the part of the procedure that does the constructing of the return value.</p>
+<p>Instead of trying to apply fringe twice in the result, it should be simpler to deal only with the first element of the list and then move on to the next element.  This means we are going to have a final line of <code>(cons (car x) (fringe (cdr x)))</code>.  The rest of the procedure deals with all of the cases necessary to ensure that <code>(car x)</code> is a non-null, non-list, single element.</p>
+
+<code><pre>(define (fringe x)
+   (cond ((null? x) x)
+         ((not (list? x)) (list x))
+         ((null? (cdr x)) (fringe (car x)))
+         ((null? (car x)) (fringe (car (cdr x))))
+         ((list? (car x)) (fringe (list (car (car x)) (car (cdr (car x))) (car (cdr x)) (car     (cdr (cdr x))))))
+         (else (cons (car x) (fringe (cdr x))))))
+
+<p>While cdr'ing down a list it's possible to end up left with null.  If we do we'll return that as the final parameter to the last cons.  Remember that construction of a flat list using cons has to end with either null or a single element list.  For example <code>(cons 1 (cons 2 (cons 3 ())))</code> returns <code>(1 2 3)</code> as does <code>(cons 1 (cons 2 cons (list 3)))</code>.  So those are our two ending conditions - null, or a non-list parameter.</p>
+<p>If the parameter that is being processed has null as its tail, we don't need the tail at all, so we have a condition there as well to only take the head of the list in that case.  Similarly, if the head of the parameter is null, we take only the tail.</p>
+
+<p>In the case of a list as the next element, we want to recur back into the procedure with a newly created list consisting of the next element extracted from the inner-list, followed by the rest of the elements.  So a parameter of <code>((1 2) 3)</code> would be changed to <code>(1 (2) 3 ())</code>.  Also, <code>(((1 2) 3) 4)</code> would recur as <code>((1 2) (3) 4 ())</code> then processed again as <code>(1 (2) (3) (4 ())</code>.  The idea is to keep calling fringe on the parameter until the first element is not a list, without loosing any of the other elements.</p>  
+
+<code><pre>(fringe '((1 2) (3 4) 5 () () (((7))) ((8) 9) (((10 ((11))))) 12))
+(1 2 3 4 5 6 7 8 9 10 11 12)</pre></code>
+
+<p>As always, I've written this out and worded it for myself with hopes that I will understand it if I come back to it later on.  If you've found it useful as well, I'd love to hear about it.</p>
+
+        </section>
+        <footer>
+          Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.  Slightly modified to suit my taste.
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
