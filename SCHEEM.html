@@ -9,6 +9,8 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="javascripts/main.js"></script>
+    <script src="javascripts/parser.js"></script>
+    <script src="javascripts/evalScheem.js"></script>
 
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,7 +28,7 @@
         </header>
 
         <section id="dropdown" class="clearfix">
-        <span class="button"><a href="#">xorg.conf  &#5121;</a></span>
+        <span class="button"><a href="#">SCHEEM parser / interpreter &#5121;</a></span>
         <ul>
            <li><a href="http://github.com/tejohnso">My GitHub Repos</a></li>
            <li><a href="index.html">Welcome</a></li>
@@ -36,40 +38,57 @@
            <li><a href="xorg.conf.html">xorg.conf</a></li>
            <li><a href="bashrc.html">.bashrc</a></li>
         </ul>
-
         </section>
 
         <hr>
 
         <section id="main_content">
-          <h3>xorg.conf</h3>
+          <h3>SCHEEM parser / interpreter</h3>
 
-          <pre><code>Section "Device"
-	Identifier "vid1"
-	Driver "vboxvideo"
-EndSection
+          <p>This is a lisp language written as part of <a href="http://nathansuniversity.com">Nathan's University</a>'s PL101 - Create Your Own Programming Language course.</p>
+          <p>Try it out!</p>
 
-Section "Screen"
-	Identifier "default"
-	Device "vid1"
-	SubSection "Display"
-		Depth 24
-		Modes "1920x1080"
-	EndSubSection
-EndSection
+          <textarea id="input" style="width:800px; height:300px;">(+ 1 2)</textarea>
 
-Section "ServerLayout"
-	Identifier "defaultLayout"
-	Screen "default"
-EndSection
-         </code></pre>
+          <input id="submitbutton" type="button" value="Run" />
+
+          <div id="console" class="console" style="border:solid 1px;">
+             <p>Output:</p>
+          </div>
+
+          <script>
+             var log_console = function(msg) {
+                $('#console').append('<p>' + msg + '</p>');
+             };
+
+             $(function() {
+                $('#submitbutton').click(function() {
+                   var user_text = $('#input').val();
+                   $('#console').html('');
+                   log_console('Your input was: "' + user_text + '"');
+                   try {
+                      var parsed = SCHEEM.parse(user_text);
+                      log_console('Parsed: ' + JSON.stringify(parsed));
+                      try {
+                         var result = evalScheem(parsed, {});
+                         log_console('Result: ' + JSON.stringify(result));
+                      }
+                      catch(e) {
+                         log_console('Eval Error: ' + e);
+                      }
+                   }
+                   catch(e) {
+                      log_console('Parse Error: ' + e);
+                   }
+                });
+             });
+          </script>
+
+
         </section>
-
         <footer>
           Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.  Slightly modified to suit my taste.
         </footer>
-
-        
       </div>
     </div>
   </body>
