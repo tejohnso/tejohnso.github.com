@@ -46,6 +46,24 @@
           <h3>SCHEEM parser / interpreter</h3>
 
           <p>This is a lisp language written as part of <a href="http://nathansuniversity.com">Nathan's University</a>'s PL101 - Create Your Own Programming Language course.</p>
+          <p>It currently supports the following keywords:
+             <ul>
+                <li> + </li>
+                <li> - </li> 
+                <li> * </li> 
+                <li> / </li> 
+                <li> &lt </li> 
+                <li> &gt </li> 
+                <li> = </li> 
+                <li> if [eg: (if (&lt 5 2) 0 10) ]</li> 
+                <li> cons [eg: (cons 1 (quote (2 3))) ]</li> 
+                <li> car </li> 
+                <li> cdr </li> 
+                <li> quote </li> 
+                <li> begin [eg: (begin (set! x 5) (set! x (+ x 1)) (+ 2 x)) ]</li> 
+                <li> set! </li>
+             </ul>
+          </p>
           <p>Try it out!</p>
 
           <textarea id="input" style="width:800px; height:300px;">(+ 1 2)</textarea>
