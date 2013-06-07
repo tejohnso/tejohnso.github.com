@@ -1,0 +1,3 @@
+zip HNTicker.xpi * -x HNTicker.xpi build
+mkdir -p ~/.mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}
+cp HNTicker.xpi ~/.mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/HNTicker@tejohnso.github.com.xpi

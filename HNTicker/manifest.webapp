@@ -1,0 +1,13 @@
+{
+   "name": "HNTicker",
+   "description": "A karma ticker for HN",
+   "developer": {
+      "name": "Tyler Johnson",
+      "url": "http://tejohnso.github.com"
+   },
+   "icons": {
+      "16": "icon-16.png"
+   }
+}
+
+

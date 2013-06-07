@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+   <setting pref="extensions.HNTicker.interval" type="integer" title="Interval (seconds - 301 minimum)">
+   </setting>
+   <setting pref="extensions.HNTicker.username" type="string" title="HN user name">
+   </setting>
+</vbox>
